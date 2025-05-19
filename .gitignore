@@ -172,5 +172,3 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-/Problem_Files/
-/Solver_Results/Gurobi/
