@@ -14,19 +14,18 @@ def nPolyBowl(n, p, k, RHS, folder):
     b = np.ones((n, 1))
     b = b*(n+epsilon)
 
-    for i in range(2,k):
+    for i in range(2,k+1):
       Atmp = np.ones((n, n))
       Atmp = Atmp + np.eye(n)*i*epsilon
 
       tmp = n + i*epsilon + tri_num(i-1)*epsilon
-      btmp = np.ones((n, 1))
       btmp = np.ones((n,1))*tmp
 
       A = np.vstack((A, Atmp))
       b = np.vstack((b, btmp))
 
     c = -np.ones((n,1))
-    write_mps(A, b, c, 51, folder+"nPolyBowl_npe_"+str(n)+"_"+str(p)+"_"+str(k)+".mps")
+    write_mpsV2(A, b, c, 53, folder+"nPolyBowl_npe_"+str(n)+"_"+str(p)+"_"+str(k)+".mps")
     # Digits available in the 25 character limit MPS filetype
     # {sign} + {ones digit} + {decimal point} + {18 digits after decimal} + {e} + {sign} + {2 digit exponent}
     # = 1 + 1 + 1 + 18 + 1 + 1 + 2 = 25
@@ -34,35 +33,33 @@ def nPolyBowl(n, p, k, RHS, folder):
     # This problem is of the form [(1 1^T) + diag(epsilon)][x] <= [1 (1+epsilon)]
     # The value 1+epsilon is the limiting factor on the written data
     # However, the final solution is (1+epsilon)/(n+epsilon) will become very small
-    1_plus_epsilon = add_min_value(1, "sci", p)
-    epsilon = 1_plus_epsilon - 1
+    one_plus_epsilon = add_min_value(1, "sci", p)
+    epsilon = one_plus_epsilon - 1
 
     A = np.ones((n, n))
     A = A + np.eye(n) * epsilon
 
-    b = np.ones((n, 1))
-    b = b * (1 + epsilon)
+    b = np.ones((n, 1)) * (1 + epsilon)
 
-    for i in range(2, k):
+    for i in range(2, k+1):
       Atmp = np.ones((n, n))
       Atmp = Atmp + np.eye(n) * i * epsilon
 
-      tmp = n + i * epsilon + tri_num(i - 1) * epsilon
-      btmp = np.ones((n, 1))
+      tmp = 1 + (tri_num(i-1)+1) * epsilon
       btmp = np.ones((n, 1)) * tmp
 
       A = np.vstack((A, Atmp))
       b = np.vstack((b, btmp))
 
     c = -np.ones((n, 1))
-    write_mps(A, b, c, 51, folder + "nPolyBowl_npe_" + str(n) + "_" + str(p) + "_" + str(k) + ".mps")
+    write_mpsV2(A, b, c, 53, folder + "nPolyBowl_1pe_" + str(n) + "_" + str(p) + "_" + str(k) + ".mps")
 
 
 # nPolyBowl(n=32, p=1, k=2, folder="../Problem_Files/")
 
-N = [8, 16]
-P = [11, 8, 4]
-K = [2, 3, 4]
+N = [15000]
+P = [14, 15]
+K = [2]
 
 for n in N:
   for p in P:
