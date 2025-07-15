@@ -1,0 +1,11 @@
+#!/bin/bash
+PROB_DIR="../Problem_Files/"
+SOL_DIR="../Solver_Results/QSopt_ex/"
+for PROBLEM in $PROB_DIR*
+do
+	PROBLEM_NAME=$(basename "${PROBLEM%.*}")
+	echo "############## SOLVING $PROBLEM_NAME ##############"
+	echo $PROBLEM
+	echo $PROBLEM_NAME
+	esolver -O "${SOL_DIR}${PROBLEM_NAME}.sol" -b "${SOL_DIR}${PROBLEM_NAME}.bas" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}_terminal.log"
+done

@@ -1,6 +1,5 @@
 import numpy as np
 
-from Code.scratch import one_plus_epsilon
 from prob_gen_helper_funcs import *
 
 def nPolyBowl(n, p, k, RHS, folder):
@@ -65,11 +64,16 @@ def nPolyBowl(n, p, k, RHS, folder):
 
 # nPolyBowl(n=32, p=1, k=2, folder="../Problem_Files/")
 
-N = [3, 10, 100, 1000]
-P = [9, 10, 11, 12, 13, 14, 15, 16, 17]
+N = [3, 10, 100]
+P = [3, 10, 15]
 K = [1]
 
 for n in N:
   for p in P:
     for k in K:
       nPolyBowl(n, p, k, "npe", "../Problem_Files/")
+
+for n in N:
+  for p in P:
+    for k in K:
+      nPolyBowl(n, p, k, "1pe", "../Problem_Files/")

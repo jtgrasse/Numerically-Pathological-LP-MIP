@@ -72,7 +72,7 @@ def write_mpsV2(A, b, c, p, filename="output.mps"):
     c -- Objective coefficients vector.
     p -- Precision of what is written to the file
          specified as the number of digits after the decimal point.
-         The output is written in scientific notation.
+         Trailing 0s are dropped.
     filename -- Name of the output MPS file.
     """
 
@@ -124,7 +124,6 @@ def write_mpsV2(A, b, c, p, filename="output.mps"):
     #
     # write_mps(A, b, c, 16, "../Problem_Files/example.mps")
 
-
 def tri_num(k):
   """
   Generates triangular numbers
@@ -135,6 +134,7 @@ def tri_num(k):
     return (k*(k+1))/2
 
 ####################### Manipulating Epsilon ##########################
+##!! Unused !!##
 def int_to_bytes(n, length):  # Helper function
     """ Int/long to byte string.
         Python 3.2+ has a built-in int.to_bytes() method that could be used
