@@ -65,8 +65,8 @@ def nPolyBowl(n, p, k, RHS, folder):
 # nPolyBowl(n=32, p=1, k=2, folder="../Problem_Files/")
 
 N = [3, 10, 100]
-P = [9, 12, 15]
-K = [1, 2, 4]
+P = [3, 9, 14, 15]
+K = [2, 4]
 
 for n in N:
   for p in P:
