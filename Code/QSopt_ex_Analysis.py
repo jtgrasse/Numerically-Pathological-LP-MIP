@@ -82,3 +82,4 @@ for file in os.listdir(qsresults_dir):
 print(results_dict)
 results_df = pd.DataFrame.from_dict(results_dict, orient='index')
 print(results_df)
+pd.DataFrame.to_csv(results_df, "qsopt_ex_results.csv")

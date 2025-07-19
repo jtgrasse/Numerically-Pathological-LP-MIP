@@ -42,7 +42,7 @@ def nPolyBowl(n, p, k, RHS, folder):
     epsilon = one_plus_epsilon - 1
 
     if epsilon == 0:
-      print("epsilon cannot be represented for RHS=1pe, n=%d, p=%d, k=%d" % (RHS, n, p, k))
+      print("epsilon cannot be represented for RHS=1pe, n=%d, p=%d, k=%d" % (n, p, k))
     else:
       A = np.ones((n, n))
       A = A + np.eye(n) * epsilon
@@ -64,9 +64,9 @@ def nPolyBowl(n, p, k, RHS, folder):
 
 # nPolyBowl(n=32, p=1, k=2, folder="../Problem_Files/")
 
-N = [3, 10, 100]
-P = [3, 9, 14, 15]
-K = [2, 4]
+N = [3, 5, 10, 100, 500, 1000, 2000, 4000]
+P = [8, 9, 10, 11, 12, 13, 14, 15, 16]
+K = [2, 4, 6, 8]
 
 for n in N:
   for p in P:
