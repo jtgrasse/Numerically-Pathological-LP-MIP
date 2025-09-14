@@ -1,4 +1,6 @@
 import numpy as np
+from scipy.constants import epsilon_0
+
 from prob_gen_helper_funcs import *
 
 def nPolyBowl_cond(n, p, k):
@@ -19,10 +21,16 @@ def nPolyBowl_cond(n, p, k):
     tmp = np.zeros((n, n*(k-1)))
     tmp = np.vstack((tmp, np.eye(n*(k-1))))
     A = np.hstack((A, tmp))
+    print(A)
     # Calculate the condition numer
-    print(np.linalg.cond(A, p=1))
+    # print(np.linalg.norm(A, ord=2))
+    # Calculate the 2 norm
+    print(np.linalg.norm(A, ord='fro'))
+    fro_norm = np.sqrt(n*((1+epsilon)**2) + n*(k-1))
+    print(fro_norm)
 
-nPolyBowl_cond(n=3, p=3, k=3)
+
+nPolyBowl_cond(n=5, p=3, k=1)
 
 # N = [3, 5, 10, 100, 500, 1000, 2000, 4000]
 # P = [8, 9, 10, 11, 12, 13, 14, 15, 16]
