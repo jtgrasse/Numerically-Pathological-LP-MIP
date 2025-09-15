@@ -7,5 +7,5 @@ do
 	echo "############## SOLVING $PROBLEM_NAME ##############"
 	echo $PROBLEM
 	echo $PROBLEM_NAME
-	esolver -O "${SOL_DIR}${PROBLEM_NAME}.sol" -b "${SOL_DIR}${PROBLEM_NAME}.bas" -N "${SOL_DIR}${PROBLEM_NAME}" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}.txt"
+	./QSopt_ex/build/esolver/esolver -O "${SOL_DIR}${PROBLEM_NAME}.sol" -b "${SOL_DIR}${PROBLEM_NAME}.bas" -N "${SOL_DIR}${PROBLEM_NAME}" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}.txt"
 done
