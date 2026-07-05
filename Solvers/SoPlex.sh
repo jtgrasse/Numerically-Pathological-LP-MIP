@@ -7,5 +7,5 @@ do
 	echo "############## SOLVING $PROBLEM_NAME ##############"
 	echo $PROBLEM
 	echo $PROBLEM_NAME
-	soplex --real:feastol=0 --real:opttol=0 --int:solvemode=2 --int:syncmode=1 --int:readmode=1 --int:checkmode=2 --writebas="${SOL_DIR}${PROBLEM_NAME}.bas" -X="${SOL_DIR}${PROBLEM_NAME}.sol" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}.txt"
+	soplex --real:feastol=0 --real:opttol=0 --int:solvemode=2 --int:syncmode=1 --int:readmode=1 --int:checkmode=2 --writebas="${SOL_DIR}${PROBLEM_NAME}.bas" -X="${SOL_DIR}${PROBLEM_NAME}.sol" -q -c $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}.txt"
 done
