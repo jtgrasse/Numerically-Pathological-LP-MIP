@@ -134,9 +134,9 @@ def nPolyBowl_rational(RHS, n, p, k, folder):
     write_mps_rational(A, b, c, folder+"nPolyBowl_rational_1pe_"+str(n)+"_"+str(p)+"_"+str(k)+".mps")
 
 RHSs = ["npe", "1pe"]
-N = [10]
-P = [45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55]
-K = [4]
+N = [3, 10, 50, 100, 250, 500, 750, 1000]
+P = [20, 25, 30, 35, 40, 45, 48, 49, 50, 51, 52]
+K = [2, 4, 6, 8]
 
 print("Generating nPolyBowl_double problem instances...")
 for RHS in RHSs:
