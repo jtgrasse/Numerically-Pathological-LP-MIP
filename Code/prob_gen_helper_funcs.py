@@ -1,7 +1,18 @@
+from decimal import Decimal
+
+def float_to_exact_str(x):
+    return str(Decimal.from_float(float(x)))
+
+def tri_num(k):
+  """
+  Generates triangular numbers
+  i.e. 0, 1, 3, 6, 10, 15, ...
+  """
+  return int((k*(k+1))/2)
 
 ####################### Output Functions ##########################
 
-def write_mps_double(A, b, c, p, filename="output.mps"):
+def write_mps_double(A, b, c, filename="output.mps"):
     """
     Write an LP problem in MPS format.
     Assumes the Ax <= b and -inf < x < inf
@@ -9,9 +20,6 @@ def write_mps_double(A, b, c, p, filename="output.mps"):
     A -- Coefficient matrix for the constraints.
     b -- Right-hand side vector.
     c -- Objective coefficients vector.
-    p -- Precision of what is written to the file
-         specified as the number of digits after the decimal point.
-         Trailing 0s are dropped.
     filename -- Name of the output MPS file.
     """
     num_constraints, num_vars = A.shape
@@ -31,17 +39,17 @@ def write_mps_double(A, b, c, p, filename="output.mps"):
         f.write("COLUMNS\n")
         for j in range(num_vars):
             # Add the objective coefficient for this variable
-            f.write(f"    X{j + 1}    OBJ     {c[j, 0]:.{p}g}\n")
+            f.write(f"    X{j + 1}    OBJ     {float_to_exact_str(c[j, 0])}\n")
 
             # Add each constraint coefficient for this variable
             for i in range(num_constraints):
                 if A[i, j] != 0:  # Only non-zero entries are included
-                    f.write(f"    X{j + 1}    R{i + 1}   {A[i, j]:.{p}g}\n")
+                    f.write(f"    X{j + 1}    R{i + 1}   {float_to_exact_str(A[i, j])}\n")
 
         # RHS section
         f.write("RHS\n")
         for i in range(num_constraints):
-            f.write(f"    RHS1    R{i + 1}   {b[i, 0]:.{p}g}\n")
+            f.write(f"    RHS1    R{i + 1}   {float_to_exact_str(b[i, 0])}\n")
 
         # Bounds section (unrestricted variables, so none are specified)
         f.write("BOUNDS\n")
@@ -105,12 +113,3 @@ def write_mps_rational(A, b, c, filename="output.mps"):
         # End the file
         f.write("ENDATA\n")
     print(f"MPS file '{filename}' has been written.")
-
-def tri_num(k):
-  """
-  Generates triangular numbers
-  """
-  if k == 0:
-    return 0
-  else:
-    return int((k*(k+1))/2)

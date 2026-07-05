@@ -36,7 +36,7 @@ def nPolyBowl_double(RHS, n, p, k, folder):
         b = np.vstack((b, btmp))
 
       c = -np.ones((n,1))
-      write_mps_double(A, b, c, 60, folder+"nPolyBowl_double_npe_"+str(n)+"_"+str(p)+"_"+str(k)+".mps")
+      write_mps_double(A, b, c, folder+"nPolyBowl_double_npe_"+str(n)+"_"+str(p)+"_"+str(k)+".mps")
   elif RHS == "1pe":
     one_plus_epsilon = 1 + 2**(-p)
     epsilon = one_plus_epsilon - 1
@@ -61,7 +61,7 @@ def nPolyBowl_double(RHS, n, p, k, folder):
         b = np.vstack((b, btmp))
 
       c = -np.ones((n, 1))
-      write_mps_double(A, b, c, 60, folder + "nPolyBowl_double_1pe_" + str(n) + "_" + str(p) + "_" + str(k) + ".mps")
+      write_mps_double(A, b, c, folder + "nPolyBowl_double_1pe_" + str(n) + "_" + str(p) + "_" + str(k) + ".mps")
 
 def nPolyBowl_rational(RHS, n, p, k, folder):
   '''
@@ -135,15 +135,15 @@ def nPolyBowl_rational(RHS, n, p, k, folder):
 
 RHSs = ["npe", "1pe"]
 N = [10]
-P = [80]
+P = [45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55]
 K = [4]
 
-# print("Generating nPolyBowl_double problem instances...")
-# for RHS in RHSs:
-#   for n in N:
-#     for p in P:
-#       for k in K:
-#         nPolyBowl_double(RHS, n, p, k, "Problem_Files/")
+print("Generating nPolyBowl_double problem instances...")
+for RHS in RHSs:
+  for n in N:
+    for p in P:
+      for k in K:
+        nPolyBowl_double(RHS, n, p, k, "Problem_Files/")
 
 # print("Generating nPolyBowl_rational problem instances...")
 # for RHS in RHSs:
@@ -151,12 +151,5 @@ K = [4]
 #     for p in P:
 #       for k in K:
 #         nPolyBowl_rational(RHS, n, p, k, "Problem_Files/")
-
-print("\nGenerating nPolyBowl_integer_rational problem instances...")
-for RHS in RHSs:
-  for n in N:
-    for p in P:
-      for k in K:
-        nPolyBowl_rational(RHS, n, p, k, "Problem_Files/")
 
 print("\nDone generating all problem instances!")
