@@ -16,6 +16,7 @@ def write_mps_double(A, b, c, filename="output.mps"):
     """
     Write an LP problem in MPS format.
     Assumes the Ax <= b and -inf < x < inf
+    And minimizes c^T x
     Arguments:
     A -- Coefficient matrix for the constraints.
     b -- Right-hand side vector.
@@ -67,7 +68,7 @@ def write_mps_rational(A, b, c, filename="output.mps"):
     """
     Write an LP problem in MPS format using infinite-precision integers via Fraction objects.
     Assumes the Ax <= b and -inf < x < inf
-    
+    And minimizes c^T x
     Arguments:
     A -- Coefficient matrix for the constraints (list of lists of Fraction objects)
     b -- Right-hand side vector (list of Fraction objects)

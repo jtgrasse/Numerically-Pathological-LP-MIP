@@ -1,9 +1,9 @@
 import numpy as np
 from fractions import Fraction
 
-from prob_gen_helper_funcs import *
+from Code.helper_funcs import *
 
-def nPolyBowl_double(RHS, n, p, k, folder):
+def nPolyBowl_double(RHS, n, p, k):
   '''
   Generates a nPolyBowl using the following parameters:
   n: number of variables
@@ -16,7 +16,7 @@ def nPolyBowl_double(RHS, n, p, k, folder):
     n_plus_epsilon = n + 2**(-p)
     epsilon = n_plus_epsilon - n
     if epsilon == 0:
-      print("epsilon cannot be represented for RHS=npe, n=%d, p=%d, k=%d" % (n, p, k))
+      raise ValueError("epsilon cannot be represented for RHS=npe, n=%d, p=%d, k=%d" % (n, p, k))
     else:
       A = np.ones((n, n))
       A = A + np.eye(n)*epsilon
@@ -28,7 +28,6 @@ def nPolyBowl_double(RHS, n, p, k, folder):
         Atmp = np.ones((n, n))
         Atmp = Atmp + np.eye(n)*i*epsilon
 
-        # tmp = n + i*epsilon + tri_num(i-1)*epsilon
         tmp = n + (i + tri_num(i-1))*epsilon
         btmp = np.ones((n,1))*tmp
 
@@ -36,13 +35,12 @@ def nPolyBowl_double(RHS, n, p, k, folder):
         b = np.vstack((b, btmp))
 
       c = -np.ones((n,1))
-      write_mps_double(A, b, c, folder+"nPolyBowl_double_npe_"+str(n)+"_"+str(p)+"_"+str(k)+".mps")
   elif RHS == "1pe":
     one_plus_epsilon = 1 + 2**(-p)
     epsilon = one_plus_epsilon - 1
 
     if epsilon == 0:
-      print("epsilon cannot be represented for RHS=1pe, n=%d, p=%d, k=%d" % (n, p, k))
+      raise ValueError("epsilon cannot be represented for RHS=1pe, n=%d, p=%d, k=%d" % (n, p, k))
     else:
       A = np.ones((n, n))
       A = A + np.eye(n) * epsilon
@@ -53,7 +51,6 @@ def nPolyBowl_double(RHS, n, p, k, folder):
         Atmp = np.ones((n, n))
         Atmp = Atmp + np.eye(n) * i * epsilon
 
-        # tmp = 1 + (tri_num(i-1)+1) * epsilon
         tmp = 1 + (i + tri_num(i-1)) * epsilon
         btmp = np.ones((n, 1)) * tmp
 
@@ -61,11 +58,11 @@ def nPolyBowl_double(RHS, n, p, k, folder):
         b = np.vstack((b, btmp))
 
       c = -np.ones((n, 1))
-      write_mps_double(A, b, c, folder + "nPolyBowl_double_1pe_" + str(n) + "_" + str(p) + "_" + str(k) + ".mps")
+  return A, b, c
 
-def nPolyBowl_rational(RHS, n, p, k, folder):
+def nPolyBowl_rational(RHS, n, p, k):
   '''
-  Generates a nPolyBowl using infinite precision rationals via Python's Fraction class.
+  Generates a nPolyBowl using arbitrary precision rationals via Python's Fraction class.
   Stores all coefficients as Fraction objects for exact arithmetic.
   
   Parameters:
@@ -100,8 +97,6 @@ def nPolyBowl_rational(RHS, n, p, k, folder):
     
     # c is objective vector of -1s
     c = [Fraction(-1) for _ in range(n)]
-    
-    write_mps_rational(A, b, c, folder+"nPolyBowl_rational_npe_"+str(n)+"_"+str(p)+"_"+str(k)+".mps")
   
   elif RHS == "1pe":
     epsilon = Fraction(1, 2**p)
@@ -130,26 +125,37 @@ def nPolyBowl_rational(RHS, n, p, k, folder):
     
     # c is objective vector of -1s
     c = [Fraction(-1) for _ in range(n)]
-    
-    write_mps_rational(A, b, c, folder+"nPolyBowl_rational_1pe_"+str(n)+"_"+str(p)+"_"+str(k)+".mps")
+  return A, b, c
 
-RHSs = ["npe", "1pe"]
-N = [3, 10, 50, 100, 250, 500, 750, 1000]
-P = [20, 25, 30, 35, 40, 45, 48, 49, 50, 51, 52]
-K = [2, 4, 6, 8]
+def generate_nPolyBowl_rational_mps(RHS, n, p, k, folder):
+  A, b, c = nPolyBowl_rational(RHS, n, p, k)
+  write_mps_rational(A, b, c, folder+"nPolyBowl_rational_"+RHS+"_"+str(n)+"_"+str(p)+"_"+str(k)+".mps")
 
-print("Generating nPolyBowl_double problem instances...")
-for RHS in RHSs:
-  for n in N:
-    for p in P:
-      for k in K:
-        nPolyBowl_double(RHS, n, p, k, "Problem_Files/")
+def generate_nPolyBowl_double_mps(RHS, n, p, k, folder):
+  try:
+    A, b, c = nPolyBowl_double(RHS, n, p, k)
+    write_mps_double(A, b, c, folder+"nPolyBowl_double_"+RHS+"_"+str(n)+"_"+str(p)+"_"+str(k)+".mps")
+  except ValueError as e:
+    print(f"{e}")
 
-# print("Generating nPolyBowl_rational problem instances...")
-# for RHS in RHSs:
-#   for n in N:
-#     for p in P:
-#       for k in K:
-#         nPolyBowl_rational(RHS, n, p, k, "Problem_Files/")
+if __name__ == "__main__":
+  RHSs = ["npe", "1pe"]
+  N = [3, 10, 50]
+  P = [50, 51, 52, 53]
+  K = [4]
 
-print("\nDone generating all problem instances!")
+  print("Generating nPolyBowl_double problem instances...")
+  for RHS in RHSs:
+    for n in N:
+      for p in P:
+        for k in K:
+          generate_nPolyBowl_double_mps(RHS, n, p, k, "Problem_Files/")
+
+  print("Generating nPolyBowl_rational problem instances...")
+  for RHS in RHSs:
+    for n in N:
+      for p in P:
+        for k in K:
+          generate_nPolyBowl_rational_mps(RHS, n, p, k, "Problem_Files/")
+
+  print("\nDone generating all problem instances!")

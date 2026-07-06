@@ -1,8 +1,9 @@
 import numpy as np
 import os
 import pandas as pd
+from fractions import Fraction
 
-from Code.prob_gen_helper_funcs import add_min_value
+from nPolyBowl import nPolyBowl_rational, nPolyBowl_double
 
 def gurobi_get_sol_vec(file):
   f = open(file, "r")
@@ -15,39 +16,46 @@ def gurobi_get_sol_vec(file):
   sol_vec = np.array(lines, dtype=float)
   return sol_vec
 
-def gurobi_analyze_sol(rhs, n, p, k, sol_vec):
-  # is_opt = (sol_vec == np.ones(n)).all()
-  if rhs == "npe":
-    sol_norm2dist = np.linalg.norm(sol_vec - np.ones(n), 2)
-  elif rhs == "1pe":
-    one_plus_epsilon = add_min_value(1, 'sci', p)
-    epsilon = 1-one_plus_epsilon
-    opt_val = one_plus_epsilon/(n+epsilon)
-    opt_vec = np.ones(n)*opt_val
-    sol_norm2dist = np.linalg.norm(sol_vec - opt_vec, 2)
-  else:
-    "error, not a valid rhs"
+def matvec(A, x):
+    return [
+        sum(A[i][j] * x[j] for j in range(len(x)))
+        for i in range(len(A))
+        ]
 
-  return sol_norm2dist
+def optimality_diff(rhs, n, p, k, sol_vec):
+  if rhs == "npe":
+    opt = Fraction(1)
+  elif rhs == "1pe":
+    epsilon = Fraction(1, 2**p)
+    opt = Fraction(1+epsilon, n+epsilon)
+  opt_val = n*opt
+  sol_val = sum(sol_vec)
+  return sol_val - opt_val
+
+def gurobi_analyze_sol(rhs, n, p, k, sol_vec):
+  # check for primal feasibility and optimality
+  A, b, c = nPolyBowl_rational(rhs, n, p, k)
+  # Primal feasibility is simply if Ax <= b
+  # Use the Fraction class to compute Ax-b exactly, then report the maximum violation
+  Ax = matvec(A, sol_vec)
+  primal_violation = max(Ax[i] - b[i] for i in range(len(b)))
+  primal_violation = max(primal_violation, 0)  # If the maximum violation is negative, then the solution is feasible
+  # Find the difference between the objective value of the solution and the optimal objective value
+  # Assuming maximization, so if the diff > 0 then the solution is super-optimal, if diff < 0 then the solution is sub-optimal
+  optimality_diff_val = optimality_diff(rhs, n, p, k, sol_vec)
+  return primal_violation, optimality_diff_val
 
 def gurobi_file_to_vec(file):
   print(file)
   tmp = file.split("/")
   tmp = tmp[-1]
   gen_params = tmp.split("_")
-  rhs, n, p, k = gen_params[1], gen_params[2], gen_params[3], gen_params[4]
+  rhs, n, p, k = gen_params[2], gen_params[3], gen_params[4], gen_params[5]
   n, p, k = int(n), int(p), int(k)
   print("n="+str(n)+", p="+str(p)+", k="+str(k))
   sol_vec = gurobi_get_sol_vec(file)
-  np.set_printoptions(precision=15)
-  print(sol_vec)
-  sol_norm2dist = gurobi_analyze_sol(rhs, n, p, k, sol_vec)
-  print("sol_norm2dist: "+str(sol_norm2dist))
-  return rhs, n, p, k, sol_norm2dist
-
-gresults_dir = "../Solver_Results/Gurobi/"
-
-# print(gurobi_file_to_vec(gresults_dir+"nPolyBowl_8_11_4_gurobi.sol"))
+  primal_violation, optimality_diff_val = gurobi_analyze_sol(rhs, n, p, k, sol_vec)
+  return rhs, n, p, k, primal_violation, optimality_diff_val
 
 def gurobi_log_to_vec(file):
   f = open(file, "r")
@@ -60,6 +68,7 @@ def gurobi_log_to_vec(file):
   param_quad = -1
   param_method = -1
   param_concurrentmethod = -1
+  param_numericfocus = -1
   for r in lines:
     if r.startswith("Presolve time: "):
       presolve_time = r[15:-2]
@@ -85,10 +94,12 @@ def gurobi_log_to_vec(file):
     elif r.startswith("Set parameter ConcurrentMethod "):
       param_concurrentmethod = r[39:-1]
       param_concurrentmethod = int(param_concurrentmethod)
-  return presolve_time, solve_iterations, solve_time, param_presolve, param_feasTol, param_quad, param_method, param_concurrentmethod
+    elif r.startswith("Set parameter NumericFocus "):
+      param_numericfocus = r[35:-1]
+      param_numericfocus = int(param_numericfocus)
+  return presolve_time, solve_iterations, solve_time, param_presolve, param_feasTol, param_quad, param_method, param_concurrentmethod, param_numericfocus
 
-# print("\n\n")
-# print(gurobi_log_to_vec(gresults_dir+"nPolyBowl_8_11_4_gurobi.log"))
+gresults_dir = "Solver_Results/Gurobi/"
 
 results_array = np.array([])
 for file in os.listdir(gresults_dir):
@@ -100,10 +111,10 @@ for file in os.listdir(gresults_dir):
     log_results = gurobi_log_to_vec(log_filt)
     results_array = np.append(results_array, log_results)
 
-results_array = results_array.reshape(int(len(results_array)/13), 13)
+results_array = results_array.reshape(int(len(results_array)/15), 15)
 print(results_array)
 
-gurobi_results_df = pd.DataFrame(results_array, columns = ['rhs', 'n', 'p', 'k', 'sol_norm2dist', 'presolve_time', 'solve_iterations', 'solve_time', 'presolve', 'feasTol', 'quad', 'method', 'concurrentmethod'])
+gurobi_results_df = pd.DataFrame(results_array, columns = ['rhs', 'n', 'p', 'k', 'primal_violation', 'optimality_diff_val', 'presolve_time', 'solve_iterations', 'solve_time', 'presolve', 'feasTol', 'quad', 'method', 'concurrentmethod', 'numericfocus'])
 print(gurobi_results_df)
 
 gurobi_results_df.to_csv(gresults_dir+'gurobi_results.csv')
