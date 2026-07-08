@@ -20,5 +20,5 @@ do
 	gurobi_cl Presolve=0 Method=0 FeasibilityTol=1e-9 ResultFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX4}.attr" LogFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX4}.log" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}${SUFFIX4}.txt"
 	gurobi_cl Presolve=0 Method=1 FeasibilityTol=1e-9 ResultFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX5}.attr" LogFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX5}.log" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}${SUFFIX5}.txt"
 	gurobi_cl Presolve=0 Method=0 FeasibilityTol=1e-9 NumericFocus=3 Quad=1 ResultFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX6}.attr" LogFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX6}.log" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}${SUFFIX6}.txt"
-	gurobi_cl Presolve=0 Method=1 FeasibilityTol=1e-9 NumericFocus=3 Quad=1 ResultFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX7}.sol" LogFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX7}.log" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}${SUFFIX7}.txt"
+	gurobi_cl Presolve=0 Method=1 FeasibilityTol=1e-9 NumericFocus=3 Quad=1 ResultFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX7}.attr" LogFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX7}.log" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}${SUFFIX7}.txt"
 done
