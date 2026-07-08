@@ -1,7 +1,7 @@
 import numpy as np
 from fractions import Fraction
 
-from Code.helper_funcs import *
+from helper_funcs import *
 
 def nPolyBowl_double(RHS, n, p, k):
   '''
@@ -140,8 +140,8 @@ def generate_nPolyBowl_double_mps(RHS, n, p, k, folder):
 
 if __name__ == "__main__":
   RHSs = ["npe", "1pe"]
-  N = [3, 10, 50]
-  P = [50, 51, 52, 53]
+  N = [3, 10]
+  P = [15, 30, 52]
   K = [4]
 
   print("Generating nPolyBowl_double problem instances...")
@@ -151,11 +151,11 @@ if __name__ == "__main__":
         for k in K:
           generate_nPolyBowl_double_mps(RHS, n, p, k, "Problem_Files/")
 
-  print("Generating nPolyBowl_rational problem instances...")
-  for RHS in RHSs:
-    for n in N:
-      for p in P:
-        for k in K:
-          generate_nPolyBowl_rational_mps(RHS, n, p, k, "Problem_Files/")
+  # print("Generating nPolyBowl_rational problem instances...")
+  # for RHS in RHSs:
+  #   for n in N:
+  #     for p in P:
+  #       for k in K:
+  #         generate_nPolyBowl_rational_mps(RHS, n, p, k, "Problem_Files/")
 
   print("\nDone generating all problem instances!")
