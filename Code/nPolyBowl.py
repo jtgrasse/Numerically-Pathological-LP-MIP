@@ -91,7 +91,7 @@ if __name__ == "__main__":
   RHSs = ["npe", "1pe"]
   N = [3, 10]
   P = [15, 30, 52]
-  K = [4]
+  K = [3]
 
   print("Generating nPolyBowl_double problem instances...")
   for type in types:
@@ -101,4 +101,4 @@ if __name__ == "__main__":
           for k in K:
             generate_nPolyBowl_mps(type, RHS, n, p, k, "Problem_Files/")
 
-  # print("\nDone generating all problem instances!")
+  print("\nDone generating all problem instances!")
