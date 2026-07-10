@@ -71,7 +71,8 @@ def write_mps_double(A, b, c, filename="output.mps"):
         for j in range(num_vars):
             if j < n:
                 # Free Variables
-                f.write(f" FR BND1    X{j + 1}\n")  # "FR" denotes free/unrestricted
+                # f.write(f" FR BND1    X{j + 1}\n")  # "FR" denotes free/unrestricted
+                f.write(f" LO BND1    X{j + 1}   0\n")  # "LO" denotes lower bound
             else:
                 # Slack variables bounded below by 0
                 f.write(f" LO BND1    S{j+1-n}   0\n")  # "LO" denotes lower bound

@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from fractions import Fraction
 
-from nPolyBowl import nPolyBowl_rational, nPolyBowl_double
+from nPolyBowl import *
 from helper_funcs import *
 
 # def gurobi_get_sol_vec(file):
@@ -51,14 +51,16 @@ def get_primal_dual_sol(file):
     if lines[i].startswith("SECTION SOLUTION"):
       primal_section = True
       dual_section = False
+      continue
     if lines[i].startswith("SECTION PI"):
       dual_section = True
       primal_section = False
+      continue
     if lines[i].startswith("SECTION BASIS"):
       dual_section = False
       primal_section = False
 
-    if primal_section and lines[i].startswith("X"):
+    if primal_section and not lines[i].startswith("#"):
       val = lines[i].split(" ")
       primal_sol.append(float(val[-1]))
     if dual_section and lines[i].startswith("R"):
@@ -74,28 +76,20 @@ def gurobi_file_to_vec(file):
   rhs, n, p, k = gen_params[2], gen_params[3], gen_params[4], gen_params[5]
   n, p, k = int(n), int(p), int(k)
   primal_sol, dual_sol = get_primal_dual_sol(file)
-  gurobi_analyze_sol(rhs, n, p, k, primal_sol, dual_sol)
+  primal_basis = [i for i in range(len(primal_sol)) if primal_sol[i] != 0]
+  print(primal_basis)
+  gurobi_analyze_sol(rhs, n, p, k, primal_basis)
   return rhs, n, p, k
 
-def gurobi_analyze_sol(rhs, n, p, k, primal_sol, dual_sol):
-  rat_primal_sol = np.array([Fraction(x) for x in primal_sol])
-  rat_dual_sol = np.array([Fraction(x) for x in dual_sol])
+def gurobi_analyze_sol(rhs, n, p, k, primal_basis):
   # check for primal feasibility
-  A, b, c = nPolyBowl_rational(rhs, n, p, k)
-  # Primal feasibility is simply if Ax <= b
+  A, b, c = nPolyBowl("rational", rhs, n, p, k)
+  # Primal feasibility is simply if [A I] [x s] = b
+  # So with the basis we need to solve for Bx = b for x
   # Use the Fraction class to compute Ax-b exactly, then report the maximum violation (negative is feasible)
-  Ax = matvec(A, rat_primal_sol)
-  primal_violation = max(Ax[i] - b[i] for i in range(len(b)))
-  primal_violation = max(float(primal_violation), 0) 
-  print(f"Primal violation: {primal_violation}")
-  # Check dual feasibility
-  # -A^T y = c
-  Aty = matvec(np.transpose(A), rat_dual_sol)
-  dual_violation = max(abs(Aty[i] - c[i]) for i in range(len(c)))
-  dual_violation = max(float(dual_violation), 0)
-  print(f"Dual violation: {dual_violation}")
+  B = [A[i] for i in primal_basis]
 
-gurobi_file_to_vec("Solver_Results/Gurobi/nPolyBowl_double_npe_3_15_4_primalquad.attr")
+gurobi_file_to_vec("Solver_Results/Gurobi/nPolyBowl_double_1pe_3_15_4_default.attr")
 
 def gurobi_log_to_vec(file):
   f = open(file, "r")
