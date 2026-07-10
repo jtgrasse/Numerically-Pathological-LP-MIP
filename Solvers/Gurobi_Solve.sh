@@ -14,7 +14,7 @@ do
 	echo "############## SOLVING $PROBLEM_NAME ##############"
 	echo $PROBLEM
 	echo $PROBLEM_NAME
-	gurobi_cl ResultFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX1}.attr" LogFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX1}.log" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}${SUFFIX1}.txt"
+	gurobi_cl ResultFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX1}.attr" ResultFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX1}.dua" LogFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX1}.log" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}${SUFFIX1}.txt"
 	gurobi_cl Presolve=0 Method=0 FeasibilityTol=1e-4 ResultFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX2}.attr" LogFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX2}.log" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}${SUFFIX2}.txt"
 	gurobi_cl Presolve=0 Method=0 FeasibilityTol=1e-6 ResultFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX3}.attr" LogFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX3}.log" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}${SUFFIX3}.txt"
 	gurobi_cl Presolve=0 Method=0 FeasibilityTol=1e-9 ResultFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX4}.attr" LogFile="${SOL_DIR}${PROBLEM_NAME}${SUFFIX4}.log" $PROBLEM &> "${SOL_DIR}${PROBLEM_NAME}${SUFFIX4}.txt"
