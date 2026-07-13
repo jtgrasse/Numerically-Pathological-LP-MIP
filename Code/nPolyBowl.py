@@ -42,12 +42,12 @@ def nPolyBowl(type, RHS, n, p, k):
     
     A.extend(Atmp)
 
-  # We have the main A, now add the identity to the right of A for the slack variables.
-  A = [row + [Fraction(1) if i == j else Fraction(0) for j in range(len(A))] for i, row in enumerate(A)]
+  # # We have the main A, now add the identity to the right of A for the slack variables.
+  # A = [row + [Fraction(1) if i == j else Fraction(0) for j in range(len(A))] for i, row in enumerate(A)]
 
   # c is objective vector of n -1s (associated with x vairables) and kn 0s (associated with slack variables)
   c = [Fraction(-1) for _ in range(n)]
-  c.extend([Fraction(0) for _ in range(n*k)])
+  # c.extend([Fraction(0) for _ in range(n*k)])
 
   # The RHS b is a vector of n+epsilon or 1+epsilon depending on the RHS parameter.
   if RHS == "npe":
@@ -87,11 +87,11 @@ def generate_nPolyBowl_mps(type, RHS, n, p, k, folder):
       print(f"{e}")
 
 if __name__ == "__main__":
-  types = ["double"]
+  types = ["double", "rational"]
   RHSs = ["npe", "1pe"]
-  N = [3, 10]
-  P = [15, 50, 51, 52]
-  K = [2, 4]
+  N = [3]
+  P = [15, 51]
+  K = [3]
 
   print("Generating nPolyBowl_double problem instances...")
   for type in types:
