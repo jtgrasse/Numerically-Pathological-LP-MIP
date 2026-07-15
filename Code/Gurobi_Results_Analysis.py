@@ -40,33 +40,23 @@ from helper_funcs import *
 #   optimality_diff_val = optimality_diff(rhs, n, p, k, sol_vec)
 #   return primal_violation, optimality_diff_val
 
-def get_primal_dual_sol(file):
+def get_primal_dual_vio(file):
   f = open(file, "r")
   lines = f.readlines()
-  primal_sol = []
-  dual_sol = []
-  primal_section = False
-  dual_section = False
+  primal_vio = Fraction(0)
+  dual_vio = Fraction(0)
   for i in range(len(lines)):
-    if lines[i].startswith("SECTION SOLUTION"):
-      primal_section = True
-      dual_section = False
+    if lines[i].startswith("  max primal feasibility violation = "):
+      index = lines[i].find("=")
+      primal_vio_str = lines[i][index+2:-1]
+      primal_vio = Fraction(primal_vio_str)
       continue
-    if lines[i].startswith("SECTION PI"):
-      dual_section = True
-      primal_section = False
+    if lines[i].startswith("  max dual feasibility violation   = "):
+      index = lines[i].find("=")
+      dual_vio_str = lines[i][index+2:-1]
+      dual_vio = Fraction(dual_vio_str)
       continue
-    if lines[i].startswith("SECTION BASIS"):
-      dual_section = False
-      primal_section = False
-
-    if primal_section and not lines[i].startswith("#"):
-      val = lines[i].split(" ")
-      primal_sol.append(float(val[-1]))
-    if dual_section and lines[i].startswith("R"):
-      val = lines[i].split(" ")
-      dual_sol.append(float(val[-1]))
-  return np.array(primal_sol, dtype=float), np.array(dual_sol, dtype=float)
+  return float(primal_vio), float(dual_vio)
 
 def gurobi_file_to_vec(file):
   print(file)
@@ -75,21 +65,18 @@ def gurobi_file_to_vec(file):
   gen_params = tmp.split("_")
   rhs, n, p, k = gen_params[2], gen_params[3], gen_params[4], gen_params[5]
   n, p, k = int(n), int(p), int(k)
-  primal_sol, dual_sol = get_primal_dual_sol(file)
-  primal_basis = [i for i in range(len(primal_sol)) if primal_sol[i] != 0]
-  print(primal_basis)
-  gurobi_analyze_sol(rhs, n, p, k, primal_basis)
-  return rhs, n, p, k
+  primal_vio, dual_vio = get_primal_dual_vio(file)
+  return rhs, n, p, k, primal_vio, dual_vio
 
-def gurobi_analyze_sol(rhs, n, p, k, primal_basis):
-  # check for primal feasibility
-  A, b, c = nPolyBowl("rational", rhs, n, p, k)
-  # Primal feasibility is simply if [A I] [x s] = b
-  # So with the basis we need to solve for Bx = b for x
-  # Use the Fraction class to compute Ax-b exactly, then report the maximum violation (negative is feasible)
-  B = [A[i] for i in primal_basis]
+# def gurobi_analyze_sol(rhs, n, p, k, primal_basis):
+#   # check for primal feasibility
+#   A, b, c = nPolyBowl("rational", rhs, n, p, k)
+#   # Primal feasibility is simply if [A I] [x s] = b
+#   # So with the basis we need to solve for Bx = b for x
+#   # Use the Fraction class to compute Ax-b exactly, then report the maximum violation (negative is feasible)
+#   B = [A[i] for i in primal_basis]
 
-gurobi_file_to_vec("Solver_Results/Gurobi/nPolyBowl_double_1pe_3_15_4_default.attr")
+gurobi_file_to_vec("Solver_Results/Gurobi/nPolyBowl_double_1pe_3_51_4_default_VIO.log")
 
 def gurobi_log_to_vec(file):
   f = open(file, "r")
@@ -133,22 +120,22 @@ def gurobi_log_to_vec(file):
       param_numericfocus = int(param_numericfocus)
   return presolve_time, solve_iterations, solve_time, param_presolve, param_feasTol, param_quad, param_method, param_concurrentmethod, param_numericfocus
 
-# gresults_dir = "Solver_Results/Gurobi/"
+gresults_dir = "Solver_Results/Gurobi/"
 
-# results_array = np.array([])
-# for file in os.listdir(gresults_dir):
-#   file_path = os.path.join(gresults_dir, file)
-#   if file_path.endswith(".attr"):
-#     results = gurobi_file_to_vec(file_path)
-#     results_array = np.append(results_array, results)
-#     log_file = file_path.replace(".attr", ".log")
-#     log_results = gurobi_log_to_vec(log_file)
-#     results_array = np.append(results_array, log_results)
+results_array = np.array([])
+for file in os.listdir(gresults_dir):
+  file_path = os.path.join(gresults_dir, file)
+  if file_path.endswith("_VIO.log"):
+    results = gurobi_file_to_vec(file_path)
+    results_array = np.append(results_array, results)
+    log_file = file_path.replace("_VIO.log", ".log")
+    log_results = gurobi_log_to_vec(log_file)
+    results_array = np.append(results_array, log_results)
 
-# results_array = results_array.reshape(int(len(results_array)/15), 15)
-# print(results_array)
+results_array = results_array.reshape(int(len(results_array)/15), 15)
+print(results_array)
 
-# gurobi_results_df = pd.DataFrame(results_array, columns = ['rhs', 'n', 'p', 'k', 'primal_violation', 'optimality_diff_val', 'presolve_time', 'solve_iterations', 'solve_time', 'presolve', 'feasTol', 'quad', 'method', 'concurrentmethod', 'numericfocus'])
-# print(gurobi_results_df)
+gurobi_results_df = pd.DataFrame(results_array, columns = ['rhs', 'n', 'p', 'k', 'primal_vio', 'dual_vio', 'presolve_time', 'solve_iterations', 'solve_time', 'presolve', 'feasTol', 'quad', 'method', 'concurrentmethod', 'numericfocus'])
+print(gurobi_results_df)
 
-# gurobi_results_df.to_csv(gresults_dir+'gurobi_results.csv')
+gurobi_results_df.to_csv(gresults_dir+'gurobi_results.csv')

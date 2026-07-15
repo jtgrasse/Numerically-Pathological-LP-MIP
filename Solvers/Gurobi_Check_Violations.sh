@@ -9,5 +9,5 @@ do
 	PROBLEM_NAME="${PROBLEM_NAME%_*}"
 	# make the violation log file name
 	VIOLATION_LOG="${SOLUTION%.bas}"
-	./QSopt_ex/build/check_violation/check_violation "$PROBLEM_DIR/$PROBLEM_NAME.mps" "$SOLUTION" &> "${VIOLATION_LOG}_violation.log"
+	./QSopt_ex/build/check_violation/check_violation "$PROBLEM_DIR/$PROBLEM_NAME.mps" "$SOLUTION" &> "${VIOLATION_LOG}_VIO.log"
 done
