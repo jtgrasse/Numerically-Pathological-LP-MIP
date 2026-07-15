@@ -87,11 +87,11 @@ def generate_nPolyBowl_mps(type, RHS, n, p, k, folder):
       print(f"{e}")
 
 if __name__ == "__main__":
-  types = ["double", "rational"]
+  types = ["double"]
   RHSs = ["npe", "1pe"]
   N = [3]
-  P = [15, 51]
-  K = [3]
+  P = [15, 30, 51, 52]
+  K = [2, 4]
 
   print("Generating nPolyBowl_double problem instances...")
   for type in types:
