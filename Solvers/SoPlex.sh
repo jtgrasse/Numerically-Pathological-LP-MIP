@@ -1,6 +1,6 @@
 #!/bin/bash
-PROB_DIR="../Problem_Files/"
-SOL_DIR="../Solver_Results/SoPlex/"
+PROB_DIR="../Problem_Files/rational/"
+SOL_DIR="../Solver_Results/SoPlex/rational/"
 for PROBLEM in $PROB_DIR*
 do
 	PROBLEM_NAME=$(basename "${PROBLEM%.*}")

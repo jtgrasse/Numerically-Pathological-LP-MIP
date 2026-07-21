@@ -6,40 +6,6 @@ from fractions import Fraction
 from nPolyBowl import *
 from helper_funcs import *
 
-# def gurobi_get_sol_vec(file):
-#   f = open(file, "r")
-#   lines = f.readlines()
-#   lines = lines[2:]
-#   for i in range(len(lines)):
-#     index = lines[i].find(' ')
-#     lines[i] = lines[i][index:]
-#     lines[i] = lines[i][:-1]
-#   sol_vec = np.array(lines, dtype=float)
-#   return sol_vec
-
-# def optimality_diff(rhs, n, p, k, sol_vec):
-#   if rhs == "npe":
-#     opt = Fraction(1)
-#   elif rhs == "1pe":
-#     epsilon = Fraction(1, 2**p)
-#     opt = Fraction(1+epsilon, n+epsilon)
-#   opt_val = n*opt
-#   sol_val = sum(sol_vec)
-#   return sol_val - opt_val
-
-# def gurobi_analyze_sol(rhs, n, p, k, sol_vec):
-#   # check for primal feasibility and optimality
-#   A, b, c = nPolyBowl_rational(rhs, n, p, k)
-#   # Primal feasibility is simply if Ax <= b
-#   # Use the Fraction class to compute Ax-b exactly, then report the maximum violation
-#   Ax = matvec(A, sol_vec)
-#   primal_violation = max(Ax[i] - b[i] for i in range(len(b)))
-#   primal_violation = max(primal_violation, 0)  # If the maximum violation is negative, then the solution is feasible
-#   # Find the difference between the objective value of the solution and the optimal objective value
-#   # Assuming maximization, so if the diff > 0 then the solution is super-optimal, if diff < 0 then the solution is sub-optimal
-#   optimality_diff_val = optimality_diff(rhs, n, p, k, sol_vec)
-#   return primal_violation, optimality_diff_val
-
 def get_primal_dual_vio(file):
   f = open(file, "r")
   lines = f.readlines()
@@ -67,14 +33,6 @@ def gurobi_file_to_vec(file):
   n, p, k = int(n), int(p), int(k)
   primal_vio, dual_vio = get_primal_dual_vio(file)
   return rhs, n, p, k, primal_vio, dual_vio
-
-# def gurobi_analyze_sol(rhs, n, p, k, primal_basis):
-#   # check for primal feasibility
-#   A, b, c = nPolyBowl("rational", rhs, n, p, k)
-#   # Primal feasibility is simply if [A I] [x s] = b
-#   # So with the basis we need to solve for Bx = b for x
-#   # Use the Fraction class to compute Ax-b exactly, then report the maximum violation (negative is feasible)
-#   B = [A[i] for i in primal_basis]
 
 gurobi_file_to_vec("Solver_Results/Gurobi/nPolyBowl_double_1pe_3_51_4_default_VIO.log")
 
