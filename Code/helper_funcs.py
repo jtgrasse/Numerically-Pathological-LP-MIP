@@ -1,4 +1,5 @@
 from decimal import Decimal
+from fractions import Fraction
 
 def float_to_exact_str(x):
     return str(Decimal.from_float(float(x)))
@@ -15,6 +16,37 @@ def matvec(A, x):
     sum(row_val * vec_val for row_val, vec_val in zip(row, x))
     for row in A
     ]
+
+def nPolyBowl_1_norm(n, p, k, i):
+    """
+    Returns the condition for the nPolyBowl problem at
+    step i>=1 of the primal simplex algorithm.
+    """
+    n = Fraction(n)
+    epsilon = Fraction(1, 2**p)
+    k = Fraction(k)
+    i = Fraction(i)
+    Bi_norm = k*n + (k*(k+1)*epsilon)/2
+    Biinv_norm = (4 * (-1 + i) + 2 * ((-1 + i) * (-1 + (-1 + k) * k) + k * n) * epsilon + (-2 + k + k**2) * epsilon**2) / (2 * epsilon * (i + epsilon))
+    return Bi_norm, Biinv_norm
+
+def nPolyBowl_inf_norm(n, p, k, i):
+    """
+    Returns the condition for the nPolyBowl problem at
+    step i>=1 of the primal simplex algorithm.
+    """
+    n = Fraction(n)
+    epsilon = Fraction(1, 2**p)
+    k = Fraction(k)
+    i = Fraction(i)
+
+    Bi_norm = i+k*epsilon+1
+
+    op1 = (2*i + epsilon - 2)/(epsilon*(i+epsilon))
+    op2 = i/(i+epsilon)
+    op3 = (2*i*k - i + k*epsilon - 2*k+2)/(i+epsilon)
+    Biinv_norm = max(op1, op2, op3)
+    return Bi_norm, Biinv_norm
 
 ####################### Output Functions ##########################
 
